@@ -1,0 +1,58 @@
+{
+  "name": "@team-good-io/react-form-builder",
+  "author": "Anton Aavik <anton@good-io.com> (https://good-io.com)",
+  "private": false,
+  "description": "React Form Builder is a versatile and customizable form-building library powered by react-hook-form.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/team-good-io/react-form-builder"
+  },
+  "keywords": [
+    "react",
+    "react-hook-form",
+    "react-form-builder",
+    "form-builder"
+  ],
+  "version": "0.0.0-development",
+  "main": "dist/index.umd.js",
+  "module": "dist/index.es.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.es.js",
+      "require": "./dist/index.umd.js",
+      "types": [
+        "./dist/index.d.ts"
+      ]
+    }
+  },
+  "files": [
+    "/dist"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "vite build",
+    "semantic-release": "semantic-release"
+  },
+  "peerDependencies": {
+    "react": "^17.0.0 || ^18.0.0",
+    "react-dom": "^17.0.0 || ^18.0.0",
+    "react-hook-form": "^7.0.0"
+  },
+  "devDependencies": {
+    "@types/cloudflare-turnstile": "^0.2.2",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.3.3",
+    "react-hook-form": "^7.0.0",
+    "semantic-release": "^24.2.0",
+    "typescript": "^5.6.3",
+    "vite": "^5.4.11",
+    "vite-plugin-dts": "^4.3.0"
+  }
+}
