@@ -13,6 +13,6 @@ export type OptionProps = {
 export type OptionsSource = {
   path: string
   deps?: string[]
-  labelName?: string
-  valueName?: string
+  labelKey?: string
+  valueKey?: string
 }

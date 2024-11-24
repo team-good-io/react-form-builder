@@ -39,8 +39,8 @@ export const Form = () => {
     'STATE': {
       deps: ['COUNTRY'],
       path: '/api/to/states.json?country={COUNTRY}',
-      labelName: 'label',
-      valueName: 'value'
+      labelKey: 'label',
+      valueKey: 'value'
     }
   }
 
@@ -107,8 +107,9 @@ export const Form = () => {
 
 ## Acknowledgments
 * [React Hook Form ](https://react-hook-form.com/) for providing the form library.
+
 Feel free to suggest improvements or report bugs via issues.
 
 ## License
 
-This package is licensed under the MIT License.
+This package is licensed under the [MIT License](https://github.com/team-good-io/react-form-builder/blob/main/LICENSE.md).
