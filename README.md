@@ -106,7 +106,7 @@ export const Form = () => {
 ```
 
 ## Acknowledgments
-* [React Hook Form for providing](https://react-hook-form.com/) the form library.
+* [React Hook Form ](https://react-hook-form.com/) for providing the form library.
 Feel free to suggest improvements or report bugs via issues.
 
 ## License
