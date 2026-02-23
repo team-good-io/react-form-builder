@@ -4,7 +4,7 @@ React Form Builder is a versatile and customizable form-building library powered
 ## Installation
 
 ```bash
-npm install @team-good-io/react-form-builder react react-dom react-hook-form
+npm install @team-good-io/react-form-builder
 ```
 
 `react`, `react-dom`, and `react-hook-form` are peer dependencies.
