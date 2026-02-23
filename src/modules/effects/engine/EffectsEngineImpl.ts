@@ -34,6 +34,8 @@ export class EffectsEngineImpl implements EffectsEngine {
   }
 
   public async init(fieldValues: Record<string, unknown>) {
+    this.destroyed = false
+
     for (const rule of this.rules) {
       const allConditionsMet = await this.evaluateCondition(rule.when, fieldValues)
       if (allConditionsMet) {

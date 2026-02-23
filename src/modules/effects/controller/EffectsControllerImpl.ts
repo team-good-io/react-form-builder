@@ -14,6 +14,10 @@ export class EffectsControllerImpl implements EffectsController {
 
   private formObserver?: { unsubscribe: () => void }
 
+  private destroyed = false
+
+  private initVersion = 0
+
   constructor(
     config: EffectsConfig,
     toolbox: EffectToolbox,
@@ -33,14 +37,33 @@ export class EffectsControllerImpl implements EffectsController {
   }
 
   public async init() {
+    const currentVersion = ++this.initVersion
+    this.destroyed = false
+
     await this.effectsEngine.init(this.toolbox.form.getValues())
 
+    if (this.destroyed || currentVersion !== this.initVersion) {
+      return
+    }
+
+    if (this.formObserver) {
+      this.formObserver.unsubscribe()
+      this.formObserver = undefined
+    }
+
     this.formObserver = this.toolbox.form.watch((values, { name }) => {
-      if (name) void this.effectsEngine.execute(name, values)
+      if (!name || this.destroyed || currentVersion !== this.initVersion) {
+        return
+      }
+
+      void this.effectsEngine.execute(name, values)
     })
   }
 
   public destroy() {
+    this.destroyed = true
+    this.initVersion += 1
+
     if (this.formObserver) {
       this.formObserver.unsubscribe()
       this.formObserver = undefined
