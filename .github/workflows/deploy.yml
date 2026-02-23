@@ -2,53 +2,48 @@ name: Build and Deploy to npm
 
 on:
   push:
-    branches:
-      - main # Deploy only from the main branch
+    branches: [main]
 
 jobs:
-  build-and-deploy:
+  release:
     runs-on: ubuntu-latest
     permissions:
-      contents: write # to be able to publish a GitHub release
-      issues: write # to be able to comment on released issues
-      pull-requests: write # to be able to comment on released pull requests
-      id-token: write # to enable use of OIDC for npm provenance
+      contents: write
+      issues: write
+      pull-requests: write
+      id-token: write
 
     steps:
-      # Step 1: Check out the code
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      # Step 2: Set up Node.js environment
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
+      - name: Checkout
+        uses: actions/checkout@v4
         with:
-          node-version: 'lts/*' # Specify the Node.js version
-          cache: 'npm'
+          fetch-depth: 0
 
-      # Step 3: Configure npm for scoped packages
-      - name: Configure npm for scoped package
-        run: |
-          echo "@team-good-io:registry=https://registry.npmjs.org/" >> .npmrc
-          echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" >> .npmrc
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "lts/*"
+          cache: "npm"
+          registry-url: "https://registry.npmjs.org"
+          scope: "@team-good-io"
 
-      # Step 4: Install dependencies
-      - name: Install dependencies
+      - name: Install
         run: npm ci
 
-      - name: Verify the integrity of provenance attestations and registry signatures for installed dependencies
+      - name: Verify npm signatures
         run: npm audit signatures
 
-      # Step 5: Run tests (optional but recommended)
-      # - name: Run tests
-      #   run: npm test
+      - name: Lint
+        run: npm run lint
 
-      # Step 6: Build the package
-      - name: Build the package
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Build
         run: npm run build
 
       - name: Release
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: npx semantic-release
