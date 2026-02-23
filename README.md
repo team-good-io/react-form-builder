@@ -270,4 +270,4 @@ Feel free to suggest improvements or report bugs via issues.
 
 ## License
 
-This package is licensed under the [MIT License](https://github.com/team-good-io/react-form-builder/blob/main/LICENSE.md).
+This package is licensed under the [MIT License](https://github.com/antonaavik/react-form-builder/blob/main/LICENSE.md).
