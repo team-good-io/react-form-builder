@@ -15,16 +15,14 @@
     "form-builder"
   ],
   "version": "0.0.0-development",
-  "main": "dist/index.umd.js",
-  "module": "dist/index.es.js",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/index.es.js",
-      "require": "./dist/index.umd.js",
-      "types": [
-        "./dist/index.d.ts"
-      ]
+      "types": "./dist/index.d.ts",
+      "require": "./dist/index.js",
+      "import": "./dist/index.mjs"
     }
   },
   "files": [
@@ -34,25 +32,39 @@
     "access": "public",
     "provenance": true
   },
+  "sideEffects": false,
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "vite build",
-    "semantic-release": "semantic-release"
+    "dev": "vite --config playground/vite.config.ts",
+    "build": "tsup src/index.ts --format esm,cjs --dts --clean",
+    "build:watch": "tsup src/index.ts --format esm,cjs --dts --watch",
+    "semantic-release": "semantic-release",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "typecheck": "tsc --noEmit",
+    "preview": "vite preview --config playground/vite.config.ts"
   },
   "peerDependencies": {
-    "react": "^17.0.0 || ^18.0.0",
-    "react-dom": "^17.0.0 || ^18.0.0",
-    "react-hook-form": "^7.0.0"
+    "react": "^18.2.0 || ^19.0.0",
+    "react-dom": "^18.2.0 || ^19.0.0",
+    "react-hook-form": "^7.53.0"
   },
   "devDependencies": {
-    "@types/cloudflare-turnstile": "^0.2.2",
-    "@types/react": "^18.3.12",
-    "@types/react-dom": "^18.3.1",
-    "@vitejs/plugin-react": "^4.3.3",
-    "react-hook-form": "^7.0.0",
+    "@eslint/js": "^9.39.3",
+    "@types/node": "^22.10.2",
+    "@types/react": "^18.3.5",
+    "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react": "^4.4.0",
+    "eslint": "^9.39.3",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-simple-import-sort": "^12.1.1",
+    "globals": "^15.15.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-hook-form": "^7.53.0",
     "semantic-release": "^24.2.0",
-    "typescript": "^5.6.3",
-    "vite": "^5.4.11",
-    "vite-plugin-dts": "^4.3.0"
+    "tsup": "^8.2.4",
+    "typescript": "^5.5.4",
+    "typescript-eslint": "^8.56.0",
+    "vite": "^5.4.2"
   }
 }

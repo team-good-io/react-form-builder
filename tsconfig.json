@@ -1,15 +1,29 @@
 {
   "compilerOptions": {
-      "module": "esnext",
-      "moduleResolution": "node",
-      "target": "esnext",
-      "jsx": "react-jsx",
-      "declaration": true,
-      "declarationDir": "./dist",
-      "outDir": "./dist",
-      "strict": true,
-      "esModuleInterop": true,
-      "skipLibCheck": true,
+    "target": "ES2020",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "jsx": "react-jsx",
+    "strict": true,
+    "declaration": true,
+    "declarationMap": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "isolatedModules": true,
+    "resolveJsonModule": true,
+    "types": [
+      "vite/client"
+    ],
+    "baseUrl": ".",
+    "paths": {
+      "@team-good-io/react-form-builder": [
+        "src/index.ts"
+      ]
+    }
   },
-  "include": ["src"]
+  "include": [
+    "src",
+    "playground"
+  ]
 }

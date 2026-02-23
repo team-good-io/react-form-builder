@@ -1,2 +1,3 @@
-export { default as createUrlPath } from './createUrlPath'
-export { default as fetchOptions } from './fetchOptions'
+export { deepMerge } from "./deepMerge"
+export { interpolateUrl } from "./interpolateUrl"
+export { isObject } from "./isObject"
