@@ -1,25 +1,25 @@
-import { OptionsCommand, OptionsConfig, OptionsSourceType, OptionsToolbox } from "../../types"
+import { OptionsCommand, OptionsConfig, OptionsSourceType, OptionsRuntimeContext } from "../../types"
 
 export class StaticCommand implements OptionsCommand {
   private readonly sourceName: string
   private readonly config: OptionsConfig
-  private readonly toolbox: OptionsToolbox
+  private readonly runtimeContext: OptionsRuntimeContext
 
   constructor(
     sourceName: string,
     config: OptionsConfig,
-    toolbox: OptionsToolbox
+    runtimeContext: OptionsRuntimeContext
   ) {
     this.sourceName = sourceName
     this.config = config
-    this.toolbox = toolbox
+    this.runtimeContext = runtimeContext
   }
 
   execute() {
     const source = this.config[this.sourceName]
     if (source.type !== OptionsSourceType.STATIC) return
 
-    this.toolbox.state.publish(this.sourceName, {
+    this.runtimeContext.state.publish(this.sourceName, {
       loading: false,
       data: source.options,
     })

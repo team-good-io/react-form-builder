@@ -2,7 +2,7 @@ import { EffectActionRegistry } from "../actions/EffectActionRegistry"
 import type { EffectsEngine } from "../engine/EffectsEngine"
 import { EffectsEngineImpl } from "../engine/EffectsEngineImpl"
 import { EffectEvaluatorRegistry } from "../evaluators/EffectEvaluatorRegistry"
-import type { EffectRule, EffectsConfig, EffectToolbox } from "../types"
+import type { EffectRule, EffectsConfig, EffectsRuntimeContext } from "../types"
 import type { EffectsController } from "./EffectsController"
 
 export class EffectsControllerImpl implements EffectsController {
@@ -10,9 +10,9 @@ export class EffectsControllerImpl implements EffectsController {
 
   private readonly effectsEngine: EffectsEngine
 
-  private readonly toolbox: EffectToolbox
+  private readonly runtimeContext: EffectsRuntimeContext
 
-  private formObserver?: { unsubscribe: () => void }
+  private runtimeSubscription?: { unsubscribe: () => void }
 
   private destroyed = false
 
@@ -20,17 +20,17 @@ export class EffectsControllerImpl implements EffectsController {
 
   constructor(
     config: EffectsConfig,
-    toolbox: EffectToolbox,
+    runtimeContext: EffectsRuntimeContext,
   ) {
     this.rules = config.rules
-    this.toolbox = toolbox
+    this.runtimeContext = runtimeContext
 
     const actionRegistry = new EffectActionRegistry(config.actions, config.allowBuiltInOverride)
     const evaluatorRegistry = new EffectEvaluatorRegistry(config.evaluators, config.allowBuiltInOverride)
 
     this.effectsEngine = new EffectsEngineImpl(
       this.rules,
-      this.toolbox,
+      this.runtimeContext,
       evaluatorRegistry,
       actionRegistry
     )
@@ -40,18 +40,18 @@ export class EffectsControllerImpl implements EffectsController {
     const currentVersion = ++this.initVersion
     this.destroyed = false
 
-    await this.effectsEngine.init(this.toolbox.form.getValues())
+    await this.effectsEngine.init(this.runtimeContext.form.getValues())
 
     if (this.destroyed || currentVersion !== this.initVersion) {
       return
     }
 
-    if (this.formObserver) {
-      this.formObserver.unsubscribe()
-      this.formObserver = undefined
+    if (this.runtimeSubscription) {
+      this.runtimeSubscription.unsubscribe()
+      this.runtimeSubscription = undefined
     }
 
-    this.formObserver = this.toolbox.form.watch((values, { name }) => {
+    this.runtimeSubscription = this.runtimeContext.form.watch((values, { name }) => {
       if (!name || this.destroyed || currentVersion !== this.initVersion) {
         return
       }
@@ -64,9 +64,9 @@ export class EffectsControllerImpl implements EffectsController {
     this.destroyed = true
     this.initVersion += 1
 
-    if (this.formObserver) {
-      this.formObserver.unsubscribe()
-      this.formObserver = undefined
+    if (this.runtimeSubscription) {
+      this.runtimeSubscription.unsubscribe()
+      this.runtimeSubscription = undefined
     }
 
     this.effectsEngine.destroy()

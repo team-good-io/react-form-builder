@@ -1,14 +1,14 @@
-import type { EffectAction, EffectCommand, EffectToolbox } from "../../types"
+import type { EffectAction, EffectCommand, EffectsRuntimeContext } from "../../types"
 
 export class ShowFieldCommand implements EffectCommand {
-  public readonly toolbox: EffectToolbox
+  public readonly runtimeContext: EffectsRuntimeContext
   public readonly action: EffectAction
 
   constructor(
-    toolbox: EffectToolbox,
+    runtimeContext: EffectsRuntimeContext,
     action: EffectAction
   ) {
-    this.toolbox = toolbox
+    this.runtimeContext = runtimeContext
     this.action = action
   }
 
@@ -19,7 +19,7 @@ export class ShowFieldCommand implements EffectCommand {
     }
 
     this.action.targets.forEach((target) => {
-      this.toolbox.state.merge(target, { fieldProps: { hidden: false } })
+      this.runtimeContext.state.merge(target, { fieldProps: { hidden: false } })
     })
   }
 }

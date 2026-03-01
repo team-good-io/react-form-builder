@@ -1,18 +1,18 @@
 import type { EffectActionRegistry } from "../actions/EffectActionRegistry"
 import type { EffectEvaluatorRegistry } from "../evaluators/EffectEvaluatorRegistry"
-import type { EffectAction, EffectCondition, EffectRule, EffectToolbox } from "../types"
+import type { EffectAction, EffectCondition, EffectRule, EffectsRuntimeContext } from "../types"
 import type { EffectsEngine } from "./EffectsEngine"
 
 export class EffectsEngineImpl implements EffectsEngine {
   private readonly rules: EffectRule[]
 
-  private readonly toolbox: EffectToolbox
+  private readonly runtimeContext: EffectsRuntimeContext
 
   private readonly evaluatorRegistry: EffectEvaluatorRegistry
 
   private readonly actionRegistry: EffectActionRegistry
 
-  private readonly dependencies: string[] = []
+  private readonly dependentFields: string[] = []
 
   private actionQueue: EffectAction[] = []
 
@@ -22,36 +22,36 @@ export class EffectsEngineImpl implements EffectsEngine {
 
   constructor(
     rules: EffectRule[],
-    toolbox: EffectToolbox,
+    runtimeContext: EffectsRuntimeContext,
     evaluatorRegistry: EffectEvaluatorRegistry,
     actionRegistry: EffectActionRegistry
   ) {
     this.rules = rules
-    this.toolbox = toolbox
+    this.runtimeContext = runtimeContext
     this.evaluatorRegistry = evaluatorRegistry
     this.actionRegistry = actionRegistry
-    this.dependencies = this.getDependencies()
+    this.dependentFields = this.getDependentFields()
   }
 
-  public async init(fieldValues: Record<string, unknown>) {
+  public async init(values: Record<string, unknown>) {
     this.destroyed = false
 
     for (const rule of this.rules) {
-      const allConditionsMet = await this.evaluateCondition(rule.when, fieldValues)
+      const allConditionsMet = await this.evaluateCondition(rule.when, values)
       if (allConditionsMet) {
         rule.actions.filter(this.shouldRunOnInit).forEach(this.queueAction.bind(this))
       }
     }
   }
 
-  public async execute(changedField: string, fieldValues: Record<string, unknown>) {
-    if (!this.dependencies.includes(changedField)) return
+  public async execute(changedFieldName: string, values: Record<string, unknown>) {
+    if (!this.dependentFields.includes(changedFieldName)) return
 
     for (const rule of this.rules) {
-      const isRelated = this.collectFields(rule.when).includes(changedField)
+      const isRelated = this.collectDependentFields(rule.when).includes(changedFieldName)
       if (!isRelated) continue
 
-      const allConditionsMet = await this.evaluateCondition(rule.when, fieldValues)
+      const allConditionsMet = await this.evaluateCondition(rule.when, values)
       if (!allConditionsMet) continue
 
       rule.actions.forEach(this.queueAction.bind(this))
@@ -62,20 +62,20 @@ export class EffectsEngineImpl implements EffectsEngine {
     this.destroyed = true
   }
 
-  private getDependencies(): string[] {
+  private getDependentFields(): string[] {
     return Array.from(new Set(
-      this.rules.flatMap(rule => this.collectFields(rule.when)),
+      this.rules.flatMap(rule => this.collectDependentFields(rule.when)),
     ))
   }
 
-  private collectFields(condition: EffectCondition): string[] {
+  private collectDependentFields(condition: EffectCondition): string[] {
     if ('type' in condition) {
       switch (condition.type) {
         case 'AND':
         case 'OR':
-          return condition.conditions.flatMap((nestedCondition) => this.collectFields(nestedCondition))
+          return condition.conditions.flatMap((nestedCondition) => this.collectDependentFields(nestedCondition))
         case 'NOT':
-          return this.collectFields(condition.condition)
+          return this.collectDependentFields(condition.condition)
       }
     } else {
       return [condition.field]
@@ -86,26 +86,26 @@ export class EffectsEngineImpl implements EffectsEngine {
     return action.skipOnInit !== true
   }
 
-  private async evaluateCondition(condition: EffectCondition, formValues: Record<string, unknown>): Promise<boolean> {
+  private async evaluateCondition(condition: EffectCondition, values: Record<string, unknown>): Promise<boolean> {
     if ('type' in condition) {
       switch (condition.type) {
         case 'AND': {
-          const results = await Promise.all(condition.conditions.map(c => this.evaluateCondition(c, formValues)))
+          const results = await Promise.all(condition.conditions.map(c => this.evaluateCondition(c, values)))
           const result = results.every(Boolean)
           return result
         }
         case 'OR': {
-          const results = await Promise.all(condition.conditions.map(c => this.evaluateCondition(c, formValues)))
+          const results = await Promise.all(condition.conditions.map(c => this.evaluateCondition(c, values)))
           const result = results.some(Boolean)
           return result
         }
         case 'NOT': {
-          const result = !(await this.evaluateCondition(condition.condition, formValues))
+          const result = !(await this.evaluateCondition(condition.condition, values))
           return result
         }
       }
     } else {
-      const fieldValue = formValues[condition.field]
+      const fieldValue = values[condition.field]
       const operatorFn = this.evaluatorRegistry.get(condition.operator)
 
       if (!operatorFn) {
@@ -140,7 +140,7 @@ export class EffectsEngineImpl implements EffectsEngine {
         console.error(`Unknown action: ${JSON.stringify(action)}`)
         return
       }
-      const command = factory(this.toolbox, action)
+      const command = factory(this.runtimeContext, action)
       await command.execute()
     } catch (error) {
       console.error(`Error executing action ${action.type}:`, error)

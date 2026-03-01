@@ -1,14 +1,14 @@
-import type { EffectAction, EffectCommand, EffectToolbox } from "../../types"
+import type { EffectAction, EffectCommand, EffectsRuntimeContext } from "../../types"
 
 export class SetValueCommand implements EffectCommand {
-  public readonly toolbox: EffectToolbox
+  public readonly runtimeContext: EffectsRuntimeContext
   public readonly action: EffectAction
 
   constructor(
-    toolbox: EffectToolbox,
+    runtimeContext: EffectsRuntimeContext,
     action: EffectAction
   ) {
-    this.toolbox = toolbox
+    this.runtimeContext = runtimeContext
     this.action = action
   }
 
@@ -20,7 +20,7 @@ export class SetValueCommand implements EffectCommand {
     
     this.action.targets.forEach(target => {
       if(('value' in this.action)) {
-        this.toolbox.form.setValue(target, this.action.value)
+        this.runtimeContext.form.setValue(target, this.action.value)
       } else {
         console.warn("SetValue action does not have a value property.")
       }

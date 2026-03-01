@@ -16,14 +16,14 @@ export class EffectActionRegistry extends Registry<EffectActionCommandFactory> {
     }
   
     private registerDefaults(): void {
-      this.register("setValue", (toolbox, action) => new SetValueCommand(toolbox, action))
-      this.register("resetField", (toolbox, action) => new ResetFieldCommand(toolbox, action))
-      this.register("clearErrors", (toolbox, action) => new ClearErrorsCommand(toolbox, action))
-      this.register("setFieldProps", (toolbox, action) => new SetFieldPropsCommand(toolbox, action))
-      this.register("setRegisterProps", (toolbox, action) => new SetRegisterPropsCommand(toolbox, action))
-      this.register("showField", (toolbox, action) => new ShowFieldCommand(toolbox, action))
-      this.register("hideField", (toolbox, action) => new HideFieldCommand(toolbox, action))
-      // this.register("deduplicateOptions", (toolbox, action) => new DeduplicateOptionsCommand(toolbox, action));
+      this.register("setValue", (runtimeContext, action) => new SetValueCommand(runtimeContext, action))
+      this.register("resetField", (runtimeContext, action) => new ResetFieldCommand(runtimeContext, action))
+      this.register("clearErrors", (runtimeContext, action) => new ClearErrorsCommand(runtimeContext, action))
+      this.register("setFieldProps", (runtimeContext, action) => new SetFieldPropsCommand(runtimeContext, action))
+      this.register("setRegisterProps", (runtimeContext, action) => new SetRegisterPropsCommand(runtimeContext, action))
+      this.register("showField", (runtimeContext, action) => new ShowFieldCommand(runtimeContext, action))
+      this.register("hideField", (runtimeContext, action) => new HideFieldCommand(runtimeContext, action))
+      // this.register("deduplicateOptions", (runtimeContext, action) => new DeduplicateOptionsCommand(runtimeContext, action));
     }
   
     private registerCustomActions(custom: Record<string, EffectActionCommandFactory>, allowBuiltInOverride: boolean): void {

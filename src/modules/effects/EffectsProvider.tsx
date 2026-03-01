@@ -1,8 +1,8 @@
 import { useEffect, useMemo } from "react"
-import { useFormContext } from "react-hook-form"
 
 import { PubSubState } from "../../shared/pubsub/PubSubState"
 import { bindMethods } from "../../utils/bindMethods"
+import { useRHFEffectsRuntimeAdapter } from "./adapters/createRHFEffectsRuntimeAdapter"
 import { EffectsControllerImpl } from "./controller/EffectsControllerImpl"
 import { EffectsContext } from "./effects-context"
 import { EffectsConfig, EffectState } from "./types"
@@ -14,20 +14,10 @@ interface EffectsProviderProps {
 
 export function EffectsProvider(props: EffectsProviderProps) {
   const { config, children } = props
-  const { getValues, watch, setValue, resetField, clearErrors, unregister } = useFormContext()
+  const adapter = useRHFEffectsRuntimeAdapter()
   const state = useMemo(() => bindMethods(new PubSubState<EffectState>(new Map())), [])
-  const toolbox = useMemo(() => ({
-    form: {
-      getValues,
-      watch,
-      setValue,
-      resetField,
-      clearErrors,
-      unregister,
-    },
-    state,
-  }), [getValues, watch, setValue, resetField, clearErrors, unregister, state])
-  const controller = useMemo(() => new EffectsControllerImpl(config, toolbox), [config, toolbox])
+  const runtime = useMemo(() => ({ form: adapter, state }), [state, adapter])
+  const controller = useMemo(() => new EffectsControllerImpl(config, runtime), [config, runtime])
 
   useEffect(() => {
     controller.init()

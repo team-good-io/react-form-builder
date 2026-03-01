@@ -14,9 +14,9 @@ export class DefaultOptionsOperatorRegistry extends Registry<OptionsCommandFacto
   }
 
   private registerDefaults(): void {
-    this.register('static', (sourceName, _values, config, toolbox) => new StaticCommand(sourceName, config, toolbox))
-    this.register('remote', (sourceName, _values, config, toolbox) => new RemoteCommand(sourceName, config, toolbox))
-    this.register('remote-dynamic', (sourceName, values, config, toolbox) => new RemoteDynamicCommand(sourceName, values, config, toolbox))
+    this.register('static', (sourceName, _values, config, runtimeContext) => new StaticCommand(sourceName, config, runtimeContext))
+    this.register('remote', (sourceName, _values, config, runtimeContext) => new RemoteCommand(sourceName, config, runtimeContext))
+    this.register('remote-dynamic', (sourceName, values, config, runtimeContext) => new RemoteDynamicCommand(sourceName, values, config, runtimeContext))
   }
 
   private registerCustomOperators(custom: Record<string, OptionsCommandFactory>): void {
