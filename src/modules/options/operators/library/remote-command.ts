@@ -1,35 +1,35 @@
-import { OptionsCommand, OptionsConfig, OptionsSourceType, OptionsToolbox } from "../../types"
+import { OptionsCommand, OptionsConfig, OptionsSourceType, OptionsRuntimeContext } from "../../types"
 
 export class RemoteCommand implements OptionsCommand {
   private readonly sourceName: string
   private readonly config: OptionsConfig
-  private readonly toolbox: OptionsToolbox
+  private readonly runtimeContext: OptionsRuntimeContext
 
   constructor(
     sourceName: string,
     config: OptionsConfig,
-    toolbox: OptionsToolbox
+    runtimeContext: OptionsRuntimeContext
   ) {
     this.sourceName = sourceName
     this.config = config
-    this.toolbox = toolbox
+    this.runtimeContext = runtimeContext
   }
 
   async execute() {
     const source = this.config[this.sourceName]
     if (source.type !== OptionsSourceType.REMOTE) return
 
-    this.toolbox.state.publish(this.sourceName, { loading: true })
+    this.runtimeContext.state.publish(this.sourceName, { loading: true })
     try {
-      const options = await this.toolbox.load.loader({
+      const options = await this.runtimeContext.load.loader({
         sourceName: this.sourceName,
         source,
-        values: this.toolbox.form.getValues(),
+        values: this.runtimeContext.form.getValues(),
         path: source.path,
       })
-      this.toolbox.state.publish(this.sourceName, { loading: false, data: options })
+      this.runtimeContext.state.publish(this.sourceName, { loading: false, data: options })
     } catch (error) {
-      this.toolbox.state.publish(this.sourceName, { loading: false, error })
+      this.runtimeContext.state.publish(this.sourceName, { loading: false, error })
     }
   }
 }

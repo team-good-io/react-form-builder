@@ -4,7 +4,7 @@ export type OptionsCommandFactory = (
   sourceName: string,
   values: Record<string, unknown>,
   config: OptionsConfig,
-  toolbox: OptionsToolbox
+  runtimeContext: OptionsRuntimeContext
 ) => OptionsCommand
 
 export interface OptionsCommand {
@@ -72,13 +72,13 @@ export type OptionsLoadOptions = {
   loader: OptionsLoader
 }
 
-export interface OptionsToolbox {
-  form: OptionsToolboxForm,
+export interface OptionsRuntimeContext {
+  form: OptionsRuntimeAdapter,
   state: PubSubState<OptionsState>
   load: OptionsLoadOptions
 }
 
-export interface OptionsToolboxForm {
+export interface OptionsRuntimeAdapter {
   getValues(): Record<string, unknown>
   watch(callback: (values: Record<string, unknown>, info: { name?: string }) => void): { unsubscribe: () => void }
 }

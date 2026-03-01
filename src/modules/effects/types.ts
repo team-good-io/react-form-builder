@@ -2,7 +2,7 @@ import { PubSubState } from "src/shared/pubsub/PubSubState"
 
 export type EffectEvaluator = (fieldValue: unknown, conditionValue: unknown) => boolean | Promise<boolean>
 
-export type EffectActionCommandFactory = (toolbox: EffectToolbox, action: EffectAction) => EffectCommand
+export type EffectActionCommandFactory = (runtimeContext: EffectsRuntimeContext, action: EffectAction) => EffectCommand
 
 export interface EffectCommand {
   execute(): Promise<void>
@@ -46,8 +46,8 @@ export interface CustomEffectAction {
 
 export type EffectAction = BuiltInEffectAction | CustomEffectAction
 
-export interface EffectToolbox {
-  form: EffectsToolboxForm
+export interface EffectsRuntimeContext {
+  form: EffectsRuntimeAdapter
   state: PubSubState<EffectState>
 }
 
@@ -57,7 +57,7 @@ export type SetValueOptions = {
   shouldTouch?: boolean
 }
 
-export interface EffectsToolboxForm {
+export interface EffectsRuntimeAdapter {
   getValues(): Record<string, unknown>
   setValue(name: string, value: unknown, options?: SetValueOptions): void
   resetField(name: string): void

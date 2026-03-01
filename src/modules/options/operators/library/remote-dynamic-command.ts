@@ -1,22 +1,22 @@
 import { interpolateUrl } from "../../../../utils"
-import { OptionsCommand, OptionsConfig, OptionsSourceType, OptionsToolbox } from "../../types"
+import { OptionsCommand, OptionsConfig, OptionsSourceType, OptionsRuntimeContext } from "../../types"
 
 export class RemoteDynamicCommand implements OptionsCommand {
   private readonly sourceName: string
   private readonly values: Record<string, unknown> = {}
   private readonly config: OptionsConfig
-  private readonly toolbox: OptionsToolbox
+  private readonly runtimeContext: OptionsRuntimeContext
 
   constructor(
     sourceName: string,
     values: Record<string, unknown>,
     config: OptionsConfig,
-    toolbox: OptionsToolbox
+    runtimeContext: OptionsRuntimeContext
   ) {
     this.sourceName = sourceName
     this.values = values
     this.config = config
-    this.toolbox = toolbox
+    this.runtimeContext = runtimeContext
   }
 
   async execute() {
@@ -31,23 +31,23 @@ export class RemoteDynamicCommand implements OptionsCommand {
     })
 
     if (!hasAllDeps) {
-      this.toolbox.state.publish(this.sourceName, { loading: false, data: [] })
+      this.runtimeContext.state.publish(this.sourceName, { loading: false, data: [] })
       return
     }
 
     const interpolatedPath = interpolateUrl(source.path, this.values)
-    this.toolbox.state.publish(this.sourceName, { loading: true })
+    this.runtimeContext.state.publish(this.sourceName, { loading: true })
 
     try {
-      const options = await this.toolbox.load.loader({
+      const options = await this.runtimeContext.load.loader({
         sourceName: this.sourceName,
         source,
         values: this.values,
         path: interpolatedPath,
       })
-      this.toolbox.state.publish(this.sourceName, { loading: false, data: options })
+      this.runtimeContext.state.publish(this.sourceName, { loading: false, data: options })
     } catch (error) {
-      this.toolbox.state.publish(this.sourceName, { loading: false, error })
+      this.runtimeContext.state.publish(this.sourceName, { loading: false, error })
     }
   }
 }

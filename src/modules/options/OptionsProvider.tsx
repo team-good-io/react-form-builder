@@ -17,8 +17,8 @@ export function OptionsProvider(props: OptionsProviderProps) {
   const { config, loader, children } = props
   const { watch, getValues } = useFormContext()
   const state = useMemo(() => bindMethods(new PubSubState<OptionsState>(new Map())), [])
-  const toolbox = useMemo(() => ({ state, form: { getValues, watch }, load: { loader } }), [state, getValues, watch, loader])
-  const controller = useMemo(() => new OptionsControllerImpl(config, toolbox), [config, toolbox])
+  const runtimeContext = useMemo(() => ({ state, form: { getValues, watch }, load: { loader } }), [state, getValues, watch, loader])
+  const controller = useMemo(() => new OptionsControllerImpl(config, runtimeContext), [config, runtimeContext])
 
   useEffect(() => {
     controller.init()

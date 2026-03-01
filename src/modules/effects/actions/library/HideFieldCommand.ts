@@ -1,14 +1,14 @@
-import type { EffectAction, EffectCommand, EffectToolbox } from "../../types"
+import type { EffectAction, EffectCommand, EffectsRuntimeContext } from "../../types"
 
 export class HideFieldCommand implements EffectCommand {
-  public readonly toolbox: EffectToolbox
+  public readonly runtimeContext: EffectsRuntimeContext
   public readonly action: EffectAction
 
   constructor(
-    toolbox: EffectToolbox,
+    runtimeContext: EffectsRuntimeContext,
     action: EffectAction
   ) {
-    this.toolbox = toolbox
+    this.runtimeContext = runtimeContext
     this.action = action
   }
 
@@ -19,10 +19,10 @@ export class HideFieldCommand implements EffectCommand {
     }
 
     this.action.targets.forEach((target) => {
-      this.toolbox.state.merge(target, { fieldProps: { hidden: true } })
+      this.runtimeContext.state.merge(target, { fieldProps: { hidden: true } })
 
       if ("unregister" in this.action && this.action.unregister === true) {
-        this.toolbox.form.unregister(target)
+        this.runtimeContext.form.unregister(target)
       }
     })
   }

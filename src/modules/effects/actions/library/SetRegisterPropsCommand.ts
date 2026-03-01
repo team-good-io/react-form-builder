@@ -1,14 +1,14 @@
-import type { EffectAction, EffectCommand, EffectToolbox } from "../../types"
+import type { EffectAction, EffectCommand, EffectsRuntimeContext } from "../../types"
 
 export class SetRegisterPropsCommand implements EffectCommand {
-  public readonly toolbox: EffectToolbox
+  public readonly runtimeContext: EffectsRuntimeContext
   public readonly action: EffectAction
 
   constructor(
-    toolbox: EffectToolbox,
+    runtimeContext: EffectsRuntimeContext,
     action: EffectAction
   ) {
-    this.toolbox = toolbox
+    this.runtimeContext = runtimeContext
     this.action = action
   }
 
@@ -20,7 +20,7 @@ export class SetRegisterPropsCommand implements EffectCommand {
 
     this.action.targets.forEach((target) => {
       if ("value" in this.action) {
-        this.toolbox.state.merge(target, { registerProps: this.action.value as Record<string, unknown> })
+        this.runtimeContext.state.merge(target, { registerProps: this.action.value as Record<string, unknown> })
       } else {
         console.warn("SetRegisterProps action does not have a value property.")
       }
