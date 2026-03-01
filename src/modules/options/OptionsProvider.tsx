@@ -1,8 +1,8 @@
 import { useEffect, useMemo } from "react"
-import { useFormContext } from "react-hook-form"
 
 import { PubSubState } from "./../../shared/pubsub/PubSubState"
 import { bindMethods } from "./../../utils/bindMethods"
+import { useRHFOptionsRuntimeAdapter } from "./adapters/createRHFOptionsRuntimeAdapter"
 import { OptionsControllerImpl } from "./controller/OptionsControllerImpl"
 import { OptionsContext } from "./options-context"
 import { OptionsConfig, OptionsLoader, OptionsState } from "./types"
@@ -15,10 +15,10 @@ interface OptionsProviderProps {
 
 export function OptionsProvider(props: OptionsProviderProps) {
   const { config, loader, children } = props
-  const { watch, getValues } = useFormContext()
+  const adapter = useRHFOptionsRuntimeAdapter()
   const state = useMemo(() => bindMethods(new PubSubState<OptionsState>(new Map())), [])
-  const runtimeContext = useMemo(() => ({ state, form: { getValues, watch }, load: { loader } }), [state, getValues, watch, loader])
-  const controller = useMemo(() => new OptionsControllerImpl(config, runtimeContext), [config, runtimeContext])
+  const runtime = useMemo(() => ({ form: adapter, state, load: { loader } }), [state, adapter, loader])
+  const controller = useMemo(() => new OptionsControllerImpl(config, runtime), [config, runtime])
 
   useEffect(() => {
     controller.init()
