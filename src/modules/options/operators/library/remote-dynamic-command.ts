@@ -1,5 +1,5 @@
 import { interpolateUrl } from "../../../../utils"
-import { OptionsCommand, OptionsConfig, OptionsSourceType, OptionsRuntimeContext } from "../../types"
+import { OptionsCommand, OptionsConfig, OptionsRuntimeContext,OptionsSourceType } from "../../types"
 
 export class RemoteDynamicCommand implements OptionsCommand {
   private readonly sourceName: string

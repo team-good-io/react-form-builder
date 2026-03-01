@@ -1,4 +1,4 @@
-import { OptionsCommand, OptionsConfig, OptionsSourceType, OptionsRuntimeContext } from "../../types"
+import { OptionsCommand, OptionsConfig, OptionsRuntimeContext,OptionsSourceType } from "../../types"
 
 export class StaticCommand implements OptionsCommand {
   private readonly sourceName: string
